@@ -8,8 +8,16 @@ Generate a playlist from Bandcamp search results.
 
 ### Example
 
-```bash
-bc_radio.py --tag depressive-black-metal -o random_music.pls
+Completly random tag:
+
+```
+bc_radio.py -o random_music.pls
+```
+
+Specify tag:
+
+```
+bc_radio.py -t rock -o my_playlist.pls
 ```
 
 Available tags: [here](https://bandcamp.com/tags).

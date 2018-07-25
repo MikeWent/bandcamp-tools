@@ -4,14 +4,14 @@ from random import choice as choice_random
 import argparse
 
 args = argparse.ArgumentParser()
-args_tag = args.add_mutually_exclusive_group(required=True)
+args_tag = args.add_mutually_exclusive_group()
 args_tag.add_argument("-l", "--list-tags", help="show all available music tags", action="store_true")
 args_tag.add_argument("-t", "--tag", help="music tag to search", default=None)
 args.add_argument("-o", "--output", help="output playlist filename", metavar="FILE")
 args_format = args.add_mutually_exclusive_group()
 args_format.add_argument("-p", "--pls", help="generate .pls file (default)", action="store_true", default=True)
 args_format.add_argument("-m", "--m3u8", help="generate .m3u8 file", action="store_true")
-args.add_argument("-n", "--number", help="minimal number of albums to fetch, default is 30", default=30, type=int, metavar="N")
+args.add_argument("-n", "--number", help="minimal number of albums to fetch, default is 15", default=15, type=int, metavar="N")
 options = args.parse_args()
 
 if not options.output and not options.list_tags:
@@ -59,11 +59,14 @@ def generate_m3u8(tracklist):
     return result
 
 if options.list_tags:
-    print(", ".join([tag for tag in bc.get_all_tags()]))
+    all_tags = bc.get_all_tags()
+    print(", ".join([tag for tag in all_tags["tags"]]))
+    print()
+    print(", ".join([location for location in all_tags["locations"]]))
     exit()
 
 if not options.tag:
-    tag = choice_random(bc.get_all_tags())
+    tag = choice_random(bc.get_all_tags()["tags"])
     print(f":: Randomly choosen tag: {tag}")
 else:
     tag = options.tag
@@ -82,10 +85,8 @@ for album in bc.search_albums_by_tag(tag, generator=True):
 
 print(":: Total", len(tracklist), "tracks")
 if options.m3u8:
-    print(":: Generating .m3u8 playlist")
     playlist = generate_m3u8(tracklist)
 elif options.pls:
-    print(":: Generating .pls playlist")
     playlist = generate_pls(tracklist)
 with open(options.output, "w") as f:
     f.write(playlist)

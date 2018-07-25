@@ -4,7 +4,7 @@ import bc
 
 ALBUM_URL = "https://shirobon.bandcamp.com/album/reject"
 TRACK_URL = "https://shirobon.bandcamp.com/track/cloud-chaser"
-RANDOM_TAG = random.choice(bc.get_all_tags())
+RANDOM_TAG = random.choice(bc.get_all_tags()["tags"])
 
 
 def stdout(*smth):
