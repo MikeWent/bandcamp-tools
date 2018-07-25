@@ -204,15 +204,21 @@ def get_all_tags():
     """Get all Bandcamp tags
 
     Returns:
-        list of strings
+        {"tags": [], "locations": []}
     """
+    def get_tags_from_cloud(tags_cloud):
+        tags = []
+        for possible_found_tag in tags_cloud.find_all("a", attrs={"tag"}):
+            if isinstance(possible_found_tag.string, str):
+                tags.append(possible_found_tag.string.lower().replace(" ", "-").replace("/", "-"))
+        return tags
     html = _http_get("https://bandcamp.com/tags").text
     parsed_html = BeautifulSoup(html, HTML_PARSER)
-    tags = []
-    for possible_found_tag in parsed_html.find_all("a", attrs={"tag"}):
-        if isinstance(possible_found_tag.string, str):
-            tags.append(possible_found_tag.string.lower().replace(" ", "-").replace("/", "-"))
-    return tags
+    tags_cloud = parsed_html.find("div", attrs={"class": "tagcloud", "id": "tags_cloud"})
+    locations_cloud = parsed_html.find("div", attrs={"class": "tagcloud", "id": "locations_cloud"})
+    tags = get_tags_from_cloud(tags_cloud)
+    locations = get_tags_from_cloud(locations_cloud)
+    return {"tags": tags, "locations": locations}
 
 
 if __name__ == "__main__":
